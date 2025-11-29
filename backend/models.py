@@ -14,7 +14,4 @@ class Add_Event(BaseModel):
     name: str
     event_time: datetime
     description: str
-
-class User2Event(BaseModel):
-    event_id: int
-    user_id: int
+    category: int

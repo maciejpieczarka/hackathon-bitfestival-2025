@@ -82,11 +82,33 @@ def add_event(event: Add_Event, credentials: Annotated[HTTPBasicCredentials, Dep
         name=event.name,
         event_time=event.event_time,
         description=event.description,
-        organizer_id=user.id
+        organizer_id=user.id,
+        category=event.category
     )
 
     db.add(new_event)
     db.commit()
     db.refresh(new_event)
+
+    return {"status": "200"}
+
+@app.delete('/delete_event/{event_id}')
+def delete_event(event_id: int, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        return {"status": "401"}
+
+    event_to_delete = db.query(Event).filter(Event.id == event_id).first()
+
+    if not event_to_delete:
+        return {"status": "404"}
+
+    if event_to_delete.organizer_id != user.id:
+        return {"status": "403"}
+
+    db.delete(event_to_delete)
+    db.commit()
 
     return {"status": "200"}

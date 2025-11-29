@@ -4,7 +4,7 @@ import {Image} from '@/components/ui/image'
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { useState } from 'react';
 import { VStack } from '@/components/ui/vstack';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm} from 'react-hook-form';
 import { ScrollView } from 'react-native';
 import FormField from '@/components/auth/form-field'
 import { Text } from '@/components/ui/text';
@@ -29,11 +29,14 @@ export default function RegisterScreen() {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: { email: "", password: "", username: "", repeatedPassword: "" },
     mode: "onBlur",
   });
+
+  const password = watch('password')
 
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
@@ -101,6 +104,7 @@ export default function RegisterScreen() {
                 name="username"
                 rules={{
                   required: "Nazwa użytkownika jest wymagana",
+
                   // pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Niepoprawna nazwa użytkownika!" },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
@@ -122,6 +126,7 @@ export default function RegisterScreen() {
                 name="password"
                 rules={{
                   required: "Hasło jest wymagane!",
+                  minLength: {value: 8, message: "Hasło musi mieć minimum 8 znaków!"},
                   // pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Password should contain: " },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
@@ -145,6 +150,7 @@ export default function RegisterScreen() {
                 name="repeatedPassword"
                 rules={{
                   required: "Należy powtórzyć wpisane hasło!",
+                  validate: (value) => value === password || "Hasła się  nie zgadzają!"
                   // pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Password should contain: " },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (

@@ -9,6 +9,7 @@ class User(Base):
     username = Column(String(255), unique=True, index=True)
     password = Column(String(255))
     email = Column(String(255), unique=True, index=True)
+    description = Column(String(1000), default="")
     
     events = relationship("Event", back_populates="organizer")
     activities = relationship("Activity", secondary='user2activity', back_populates="users")

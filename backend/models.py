@@ -18,3 +18,15 @@ class Add_Event(BaseModel):
 
 class Join_Event(BaseModel):
     event_id: int
+    user_id: int  
+    
+class DataVector(BaseModel):
+    mood: int
+    energy: int
+    collaboration_style: int
+    activity: int
+    
+class UserResponse(BaseModel):
+    username: str
+    email: str
+    

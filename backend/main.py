@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException, status
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-from database_models import User, Base, Event, User2Event
-from models import Register, Add_Event, Join_Event
+from database_models import User, Base, Event, UserInputDataVector
+from models import Login, Register, Add_Event, User2Event, DataVector, UserResponse
 from passlib.context import CryptContext
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from typing import Annotated
@@ -145,3 +146,40 @@ def join_event(join_data: Join_Event, credentials: Annotated[HTTPBasicCredential
     db.refresh(user2event)
 
     return {"status": "200"}
+
+@app.post('/user_input_data')
+def user_input_data(data_vector: DataVector, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        return {"status": "401"}
+    
+    existing_vector = db.query(UserInputDataVector).filter(UserInputDataVector.user_id == get_current_id(user, credentials)).first()
+    
+    if existing_vector:
+        db.delete(existing_vector)
+        db.commit()
+
+    new_data_vector = UserInputDataVector(
+        user_id=get_current_id(user, credentials),
+        mood=data_vector.mood,
+        energy=data_vector.energy,
+        collaboration_style=data_vector.collaboration_style,
+        activity_id=data_vector.activity
+    )
+
+    db.add(new_data_vector)
+    db.commit()
+    db.refresh(new_data_vector)
+    
+    distances = {}
+    
+    for user_vector in db.query(UserInputDataVector).filter(and_(UserInputDataVector.user_id != get_current_id(user, credentials), UserInputDataVector.activity == new_data_vector.activity)).all():
+        distance = ((user_vector.mood - new_data_vector.mood) ** 2 +
+                    (user_vector.energy - new_data_vector.energy) ** 2 +
+                    (user_vector.collaboration_style - new_data_vector.collaboration_style) ** 2) ** 0.5
+        distances[user_vector.user_id] = distance
+    sorted_distances = sorted(distances.items(), key=lambda x: x[1])
+    users_to_recommend = [user_id for user_id, distance in sorted_distances[:100]]
+    users = db.query(User).filter(User.id.in_(users_to_recommend)).all()
+    return {"users": [ UserResponse(username=u.username, email=u.email) for u in users ]}

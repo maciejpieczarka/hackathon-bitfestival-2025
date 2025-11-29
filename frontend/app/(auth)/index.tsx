@@ -20,7 +20,7 @@ enum Errors {
   PASSWORDS_DOESNT_MATCH,
 }
 
-export default function LoginScreen() {
+export default function Index() {
   const [passVis, setPassVis] = useState(false)
 
   const router = useRouter()

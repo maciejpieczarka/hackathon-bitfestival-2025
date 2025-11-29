@@ -2,7 +2,7 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import {Box} from "@/components/ui/box";
 import {Image} from '@/components/ui/image'
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Controller, useForm} from 'react-hook-form';
 import { ScrollView } from 'react-native';
@@ -10,6 +10,7 @@ import FormField from '@/components/auth/form-field'
 import { Text } from '@/components/ui/text';
 import { ArrowLeftIcon } from '@/components/ui/icon';
 import {useRouter} from 'expo-router';
+import { AuthContext } from '@/contexts/AuthContext';
 
 enum Errors {
   INVALID_EMAIL,
@@ -26,6 +27,8 @@ export default function RegisterScreen() {
 
   const router = useRouter()
 
+  const authContext = useContext(AuthContext);
+
   const {
     control,
     handleSubmit,
@@ -40,6 +43,8 @@ export default function RegisterScreen() {
 
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
+    authContext.registerUser(data.username, data.password, data.email)
+
   };
 
   const handlePassVisChange = () => {
@@ -51,7 +56,7 @@ export default function RegisterScreen() {
   }
 
   const handleOnPress = () => {
-    router.replace('/(auth)/loginScreen')
+    router.replace('/(auth)')
   }
 
     return (
@@ -126,7 +131,7 @@ export default function RegisterScreen() {
                 name="password"
                 rules={{
                   required: "Hasło jest wymagane!",
-                  minLength: {value: 8, message: "Hasło musi mieć minimum 8 znaków!"},
+                  minLength: {value: 1, message: "Hasło musi mieć minimum 8 znaków!"},
                   // pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Password should contain: " },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (

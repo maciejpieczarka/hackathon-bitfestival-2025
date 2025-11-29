@@ -2,6 +2,7 @@ import '@/global.css';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { AuthContextProvider } from '@/contexts/AuthContext';
 
 export default function Layout() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function Layout() {
 
       if (!isLoggedIn) {
         redirectedRef.current = true;
-        router.replace("/(auth)/loginScreen");
+        router.replace("/(auth)");
       } else {
         redirectedRef.current = true;
         router.replace("/");
@@ -31,12 +32,15 @@ export default function Layout() {
     checkAuth();
   }, [mounted]);
   return (
-    <GluestackUIProvider>
-      <Stack screenOptions={{
-        headerShown: false
-      }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </GluestackUIProvider>
+    <AuthContextProvider>
+      <GluestackUIProvider>
+        <Stack screenOptions={{
+          headerShown: false
+        }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack>
+      </GluestackUIProvider>
+    </AuthContextProvider>
   );
 }

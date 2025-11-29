@@ -30,3 +30,19 @@ class User2Event(Base):
     id = Column(Integer, primary_key=True, index=True)
     event_id = Column(ForeignKey('event.id'), index=True)
     user_id = Column(ForeignKey('users.id'), index=True)
+    
+class UserInputDataVector(Base):
+    __tablename__ = 'user_input_data_vectors'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(ForeignKey('users.id'), index=True)
+    mood = Column(Integer)
+    energy = Column(Integer)
+    collaboration_style = Column(Integer)
+    activity = Column(ForeignKey('activities.id'), index=True)
+    
+class Activity(Base):
+    __tablename__ = 'activities'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), unique=True)

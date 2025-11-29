@@ -17,7 +17,7 @@ const TabBarIcon = ({ icon, page, color, focused }: tabBarIconProps) => {
       <Text
         style={{ color: color }}
         className={`pt-1 text-md ${
-          focused == true ? 'font-bold' : 'font-normal'
+          focused === true ? 'font-bold' : 'font-normal'
         }`}
       >
         {page}

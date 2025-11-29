@@ -27,12 +27,15 @@ class Event(Base):
     activity = relationship("Activity", back_populates="events")
 
 
-# class User2Event(Base):
-#     __tablename__ = 'user2event'
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     event_id = Column(ForeignKey('event.id'), index=True)
-#     user_id = Column(ForeignKey('users.id'), index=True)
+class User2Event(Base):
+    __tablename__ = 'user2event'
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(ForeignKey('events.id'), index=True)
+    user_id = Column(ForeignKey('users.id'), index=True)
+
+    event = relationship("Event")
+    user = relationship("User")
     
 # class UserInputDataVector(Base):
 #     __tablename__ = 'user_input_data_vectors'

@@ -15,3 +15,6 @@ class Add_Event(BaseModel):
     event_time: datetime
     description: str
     category: int
+
+class Join_Event(BaseModel):
+    event_id: int

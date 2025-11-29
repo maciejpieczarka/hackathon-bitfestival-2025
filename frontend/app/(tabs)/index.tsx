@@ -1,17 +1,20 @@
-import { StyleSheet, Text, View } from 'react-native';
+import QuizModal from '@/components/quizModal';
+import React from 'react';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Tab() {
+  const [showModal, setShowModal] = React.useState(true);
+
+  //Sliders
+
   return (
-    <View style={styles.container}>
-      <Text>Mapa</Text>
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        {/* Modal that opens once every 24h */}
+        <QuizModal isOpen={showModal} setIsOpen={setShowModal} />
+
+        {/* Lista najlepszych dopasowan pobranych z api */}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});

@@ -3,10 +3,16 @@ import '@/global.css';
 import { Stack } from 'expo-router';
 
 export default function Layout() {
+  const isLogged = false;
+
   return (
     <GluestackUIProvider>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        {isLogged ? (
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        )}
       </Stack>
     </GluestackUIProvider>
   );

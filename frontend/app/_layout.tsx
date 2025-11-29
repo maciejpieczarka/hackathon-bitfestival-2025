@@ -1,6 +1,7 @@
 import '@/global.css';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 
 export default function Layout() {
   const router = useRouter();
@@ -30,8 +31,12 @@ export default function Layout() {
     checkAuth();
   }, [mounted]);
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <GluestackUIProvider>
+      <Stack screenOptions={{
+        headerShown: false
+      }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </GluestackUIProvider>
   );
 }

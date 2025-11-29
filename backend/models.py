@@ -24,9 +24,15 @@ class DataVector(BaseModel):
     mood: int
     energy: int
     collaboration_style: int
-    activity: int
+    activity: list[int]
     
+class ActivityResponse(BaseModel):
+    id: int
+    name: str
+
 class UserResponse(BaseModel):
     username: str
     email: str
+    activities: list[ActivityResponse]
+    
     

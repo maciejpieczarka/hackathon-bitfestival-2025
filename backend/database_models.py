@@ -11,8 +11,7 @@ class User(Base):
     email = Column(String(255), unique=True, index=True)
     
     events = relationship("Event", back_populates="organizer")
-
-    events = relationship("Event", back_populates="organizer")
+    activities = relationship("Activity", secondary='user2activity', back_populates="users")
 
 class Event(Base):
     __tablename__ = 'events'
@@ -47,10 +46,8 @@ class UserInputDataVector(Base):
     mood = Column(Integer)
     energy = Column(Integer)
     collaboration_style = Column(Integer)
-    activity_id = Column(ForeignKey('activities.id'), index=True)
     
-    activity = relationship("Activity", back_populates="data_vectors")
-    
+    user = relationship("User")
 class Activity(Base):
     __tablename__ = 'activities'
 
@@ -58,4 +55,14 @@ class Activity(Base):
     name = Column(String(255), unique=True)
 
     events = relationship("Event", back_populates='activity')
-    data_vectors = relationship("UserInputDataVector", back_populates="activity")
+    users = relationship("User", secondary='user2activity', back_populates="activities")
+    
+class User2Activity(Base):
+    __tablename__ = 'user2activity'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(ForeignKey('users.id'), index=True)
+    activity_id = Column(ForeignKey('activities.id'), index=True)
+
+    user = relationship("User")
+    activity = relationship("Activity")

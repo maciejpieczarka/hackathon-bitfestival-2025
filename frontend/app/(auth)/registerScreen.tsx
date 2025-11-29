@@ -1,24 +1,12 @@
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Box} from "@/components/ui/box";
-import {Text} from "@/components/ui/text";
-import {
-    FormControl,
-    FormControlLabel,
-    FormControlError,
-    FormControlErrorText,
-    FormControlErrorIcon,
-    FormControlHelper,
-    FormControlHelperText,
-    FormControlLabelText,
-} from '@/components/ui/form-control';
 import {Image} from '@/components/ui/image'
-import { AlertCircleIcon, EyeIcon, EyeOffIcon } from '@/components/ui/icon';
-import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
-import { Button, ButtonText, ButtonSpinner, ButtonIcon } from '@/components/ui/button';
+import { Button, ButtonText} from '@/components/ui/button';
 import { useState } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Controller, useForm } from 'react-hook-form';
-import { Pressable, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
+import FormField from '@/components/auth/form-field'
 
 enum Errors {
   INVALID_EMAIL,
@@ -166,53 +154,4 @@ export default function RegisterScreen() {
         </SafeAreaView>
 
     )
-}
-
-interface FormFieldProps {
-  isInvalid: boolean,
-  label: string,
-  value: string | undefined,
-  onChange: () => void,
-  onBlur: () => void,
-  errorMessage: string | undefined,
-  onVisibilityChange?: () => void,
-  visibility?: boolean
-}
-
-function FormField({isInvalid, label, value, onChange, onBlur, errorMessage, onVisibilityChange, visibility = true} : FormFieldProps) {
-  return (
-    <FormControl
-      size={'lg'}
-      isRequired={true}
-      isInvalid={isInvalid}
-      className={' ml-3 mr-3'}
-    >
-      <FormControlLabel>
-        <FormControlLabelText>{label}</FormControlLabelText>
-      </FormControlLabel>
-      <Input className={'rounded-3xl h-12'} size={'lg'}>
-        <InputField
-          placeholder={label}
-          type={visibility ? 'text' : 'password'}
-          value={value}
-          onChangeText={onChange}
-          onBlur={onBlur}
-
-        />
-        {onVisibilityChange && (
-          <Pressable onPress={onVisibilityChange} >
-            <InputIcon  className={'p-3 mr-4'} as={!visibility ? EyeOffIcon : EyeIcon} />
-          </Pressable>
-        )}
-      </Input>
-      <FormControlHelper>
-      </FormControlHelper>
-      <FormControlError>
-        <FormControlErrorIcon as={AlertCircleIcon} className={'color-red-700'} />
-        <FormControlErrorText className={'color-red-700'} size={'sm'} >
-          {errorMessage}
-        </FormControlErrorText>
-      </FormControlError>
-    </FormControl>
-  )
 }

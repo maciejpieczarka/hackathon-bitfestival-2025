@@ -21,7 +21,7 @@ export default function Layout() {
 
       if (!isLoggedIn) {
         redirectedRef.current = true;
-        router.replace("/(auth)/registerScreen");
+        router.replace("/(auth)/loginScreen");
       } else {
         redirectedRef.current = true;
         router.replace("/");

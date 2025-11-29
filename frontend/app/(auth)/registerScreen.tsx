@@ -1,12 +1,15 @@
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Box} from "@/components/ui/box";
 import {Image} from '@/components/ui/image'
-import { Button, ButtonText} from '@/components/ui/button';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { useState } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Controller, useForm } from 'react-hook-form';
 import { ScrollView } from 'react-native';
 import FormField from '@/components/auth/form-field'
+import { Text } from '@/components/ui/text';
+import { ArrowLeftIcon } from '@/components/ui/icon';
+import {useRouter} from 'expo-router';
 
 enum Errors {
   INVALID_EMAIL,
@@ -20,6 +23,8 @@ enum Errors {
 export default function RegisterScreen() {
   const [passVis, setPassVis] = useState(false)
   const [rePassVis, setRePassVis] = useState(false)
+
+  const router = useRouter()
 
   const {
     control,
@@ -42,16 +47,33 @@ export default function RegisterScreen() {
     setRePassVis((prev) => !prev)
   }
 
+  const handleOnPress = () => {
+    router.replace('/(auth)/loginScreen')
+  }
+
     return (
         <SafeAreaView>
           <ScrollView className={''}>
             <VStack space={'lg'}>
               <Box className={'flex-col w-full items-center'}>
                 <Image
-                  source={require('@/assets/images/login.png')}
+                  source={require('@/assets/images/register.png')}
                   alt={'login'}
-                  className={' w-full h-64'}
+                  className={' w-full h-72'}
                 />
+              </Box>
+              <Box className={'w-full items-center'}>
+                <Text size={'3xl'} className={'text-center font-bold pb-4 border-b-2 border-info-500 w-11/12'}>Rozpocznij swoją przygodę wraz z Hang Over</Text>
+              </Box>
+              <Box className={'w-full flex-row grow'}>
+                <Button
+                  variant={'link'}
+                  onPress={handleOnPress}
+                  className={'ml-5'}
+                >
+                  <ButtonIcon size={'sm'} as={ArrowLeftIcon}/>
+                  <ButtonText>Wróć do logowania</ButtonText>
+                </Button>
               </Box>
               <Controller
                 control={control}

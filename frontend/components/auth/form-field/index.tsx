@@ -26,7 +26,7 @@ export default function FormField({isInvalid, label, value, onChange, onBlur, er
       size={'lg'}
       isRequired={true}
       isInvalid={isInvalid}
-      className={' ml-3 mr-3'}
+      className={' ml-5 mr-5'}
     >
       <FormControlLabel>
         <FormControlLabelText>{label}</FormControlLabelText>

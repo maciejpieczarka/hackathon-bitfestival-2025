@@ -27,13 +27,16 @@ export function AuthContextProvider({children}: AuthContextProps) {
 
 
   const loginUser = useCallback((email: string, password: string) => {
-    const response = fetch('192.168.3.138', {
+    const response = fetch('http://192.168.3.138:8000/login', {
         method: 'POST',
         headers: {
-          "Authorization": btoa(username + ':' + password)
-        }
-      }
-    )
+          "Authorization": btoa(username + ':' + password),
+          "Content-Type": "application/json"
+        },
+      }).then((value) => {
+        console.log(value)
+        console.log(value.status)
+      })
   }, [])
 
   const registerUser = useCallback((username: string, password: string, email: string) => {

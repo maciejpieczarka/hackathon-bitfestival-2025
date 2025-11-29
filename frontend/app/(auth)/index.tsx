@@ -2,7 +2,7 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import {Box} from "@/components/ui/box";
 import {Image} from '@/components/ui/image'
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Controller, useForm } from 'react-hook-form';
 import { ScrollView } from 'react-native';
@@ -10,6 +10,7 @@ import FormField from '@/components/auth/form-field'
 import {Text} from '@/components/ui/text'
 import { ExternalPathString, Link, RelativePathString, useRouter } from 'expo-router';
 import { ExternalLinkIcon } from '@/components/ui/icon';
+import { AuthContext } from '@/contexts/AuthContext';
 
 enum Errors {
   INVALID_EMAIL,
@@ -24,6 +25,7 @@ export default function Index() {
   const [passVis, setPassVis] = useState(false)
 
   const router = useRouter()
+  const authContext = useContext(AuthContext)
 
   const {
     control,
@@ -36,6 +38,7 @@ export default function Index() {
 
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
+    authContext.loginUser(data.email, data.password)
   };
 
   const handlePassVisChange = () => {

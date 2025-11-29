@@ -54,3 +54,10 @@ class Activity(Base):
     name = Column(String(255), unique=True)
 
     events = relationship("Event", back_populates='activity')
+    
+    class User2User(Base):
+        __tablename__ = 'user2user'
+
+        id = Column(Integer, primary_key=True, index=True)
+        user_id = Column(ForeignKey('users.id'), index=True)
+        friend_id = Column(ForeignKey('users.id'), index=True)

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from database_models import User, Base, Event, User2Event
-from models import Register, Add_Event, Join_Event
+from models import Register, Add_Event, Join_Event, Add_Friend, Delete_Friend
 from passlib.context import CryptContext
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from typing import Annotated
@@ -143,5 +143,29 @@ def join_event(join_data: Join_Event, credentials: Annotated[HTTPBasicCredential
     db.add(user2event)
     db.commit()
     db.refresh(user2event)
+
+    return {"status": "200"}
+
+@app.delete('/quit_event/{event_id}')
+def quit_event(event_id: int, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        return {"status": "401"}
+
+    event_to_quit = db.query(Event).filter(Event.id == event_id).first()
+    if not event_to_quit:
+        return {"status": "404"}
+
+    existing_quit = db.query(User2Event).filter(
+        User2Event.event_id == event_id,
+        User2Event.user_id == user.id
+    ).first()
+
+    if not existing_quit:
+        return {"status": "400"}
+
+    db.delete(existing_quit)
+    db.commit()
 
     return {"status": "200"}

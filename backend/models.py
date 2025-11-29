@@ -18,3 +18,9 @@ class Add_Event(BaseModel):
 
 class Join_Event(BaseModel):
     event_id: int
+
+class Add_Friend(BaseModel):
+    friend_id: int
+    
+class Delete_Friend(BaseModel):
+    friend_id: int

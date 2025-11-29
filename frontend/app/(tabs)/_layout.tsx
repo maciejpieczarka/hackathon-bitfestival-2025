@@ -1,34 +1,58 @@
-import { activeColor, inActiveColor } from '@/constants/colors';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import TabBarIcon from '@/components/tabBarIcon';
+import { activeColor } from '@/constants/colors';
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
   return (
     <Tabs
+      safeAreaInsets={{ bottom: 0 }}
       screenOptions={{
-        tabBarActiveTintColor: activeColor,
-        tabBarInactiveTintColor: inActiveColor,
+        tabBarShowLabel: false,
         headerShown: false,
+        tabBarActiveTintColor: activeColor,
         tabBarStyle: {
-          backgroundColor: 'white'
+          backgroundColor: 'white',
+          borderRadius: 15,
+          position: 'absolute',
+          bottom: 40,
+          height: 80,
+          shadowColor: '#1a1a1a',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.2,
+          elevation: 5,
+          marginHorizontal: 20
+        },
+        tabBarItemStyle: {
+          flexDirection: 'row',
+          alignItems: 'center'
         }
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Mapa',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="map" color={color} />
+          title: 'Odkrywaj',
+          tabBarIcon: ({ focused, color }) => (
+            <TabBarIcon
+              icon="explore"
+              page="Odkrywaj"
+              color={color}
+              focused={focused}
+            />
           )
         }}
       />
       <Tabs.Screen
         name="events"
         options={{
-          title: 'Wydarzenia',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="event-available" color={color} />
+          title: 'Grupy',
+          tabBarIcon: ({ focused, color }) => (
+            <TabBarIcon
+              icon="groups"
+              page="Grupy"
+              color={color}
+              focused={focused}
+            />
           )
         }}
       />
@@ -36,9 +60,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="friends"
         options={{
-          title: 'Znajomi',
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons size={28} name="emoji-people" color={color} />
+          title: 'Wydarzenia',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              icon="event-available"
+              page="Wydarzenia"
+              color={color}
+              focused={focused}
+            />
           )
         }}
       />

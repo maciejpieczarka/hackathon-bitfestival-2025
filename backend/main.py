@@ -24,9 +24,6 @@ def auth(user, credentials):
 
     return True
 
-def get_current_id(user, credentials):
-    return user.id
-
 def get_db():
     db = SessionLocal()
     try:
@@ -83,12 +80,13 @@ def add_event(event: Add_Event, credentials: Annotated[HTTPBasicCredentials, Dep
 
     new_event = Event(
         name=event.name,
+        event_time=event.event_time,
         description=event.description,
-        organizer_id=get_current_id(user, credentials)
+        organizer_id=user.id
     )
 
     db.add(new_event)
     db.commit()
-    db.refresh()
+    db.refresh(new_event)
 
     return {"status": "200"}

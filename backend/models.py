@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class Login(BaseModel):
     login: str
@@ -11,8 +12,8 @@ class Register(BaseModel):
 
 class Add_Event(BaseModel):
     name: str
+    event_time: datetime
     description: str
-    organizer_id: int
 
 class User2Event(BaseModel):
     event_id: int

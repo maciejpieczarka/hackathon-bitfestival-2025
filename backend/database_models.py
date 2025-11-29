@@ -10,12 +10,14 @@ class User(Base):
     password = Column(String(255))
     email = Column(String(255), unique=True, index=True)
 
+    events = relationship("Event", back_populates="organizer")
+
 class Event(Base):
     __tablename__ = 'events'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), index=True)
-    event_time = Column(DateTime, index=True, server_default=func.now())
+    event_time = Column(DateTime, index=True)
     description = Column(String(1000), index=True)
     organizer_id = Column(ForeignKey('users.id'), index=True)
     created_at = Column(DateTime, server_default=func.now())

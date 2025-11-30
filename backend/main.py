@@ -68,7 +68,9 @@ def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: S
     user = db.query(User).filter(User.email == credentials.username).first()
 
     if not auth(user, credentials):
-        return {"status": "401"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
 
     return {"status": "200", "username": credentials.username, "password": credentials.password}
 
@@ -77,7 +79,9 @@ def add_event(event: Add_Event, credentials: Annotated[HTTPBasicCredentials, Dep
     user = db.query(User).filter(User.email == credentials.username).first()
 
     if not auth(user, credentials):
-        return {"status": "401"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
 
     new_event = Event(
         name=event.name,
@@ -99,15 +103,21 @@ def delete_event(event_id: int, credentials: Annotated[HTTPBasicCredentials, Dep
     user = db.query(User).filter(User.email == credentials.username).first()
 
     if not auth(user, credentials):
-        return {"status": "401"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
 
     event_to_delete = db.query(Event).filter(Event.id == event_id).first()
 
     if not event_to_delete:
-        return {"status": "404"}
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
 
     if event_to_delete.organizer_id != user.id:
-        return {"status": "403"}
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
 
     db.delete(event_to_delete)
     db.commit()
@@ -119,11 +129,15 @@ def join_event(join_data: Join_Event, credentials: Annotated[HTTPBasicCredential
     user = db.query(User).filter(User.email == credentials.username).first()
 
     if not auth(user, credentials):
-        return {"status": "401"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
 
     event = db.query(Event).filter(Event.id == join_data.event_id).first()
     if not event:
-        return {"status": "404"}
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
 
     existing_join = db.query(User2Event).filter(
         User2Event.event_id == join_data.event_id,
@@ -131,10 +145,10 @@ def join_event(join_data: Join_Event, credentials: Annotated[HTTPBasicCredential
     ).first()
 
     if existing_join:
-        return {"status": "400"}
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already joined the event")
 
     if event.organizer_id == user.id:
-        return {"status": "400"}
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already joined the event")
 
     user2event = User2Event(
         event_id=join_data.event_id,
@@ -152,7 +166,9 @@ def user_input_data(data_vector: DataVector, credentials: Annotated[HTTPBasicCre
     user = db.query(User).filter(User.email == credentials.username).first()
 
     if not auth(user, credentials):
-        return {"status": "401"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
     
     activity_obj = db.query(Activity).filter(Activity.id.in_(data_vector.activity)).all()
     user.activities = activity_obj
@@ -190,14 +206,16 @@ def user_input_data(data_vector: DataVector, credentials: Annotated[HTTPBasicCre
     # Pobranie użytkowników z bazy i zachowanie kolejności
     users = db.query(User).filter(User.id.in_(users_to_recommend)).all()
     users_sorted = sorted(users, key=lambda u: users_to_recommend.index(u.id))
-    return {"users": [ UserResponse(username=u.username, email=u.email, activities=[ActivityResponse(id=a.id, name=a.name) for a in u.activities]) for u in users_sorted ]}
+    return {"users": [ UserResponse(id=u.id, username=u.username, email=u.email, description=u.description, activities=[ActivityResponse(id=a.id, name=a.name) for a in u.activities]) for u in users_sorted ]}
 
 @app.get('/users')
 def get_users(credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.username).first()
 
     if not auth(user, credentials):
-        return {"status": "401"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
 
     users = db.query(User).all()
-    return {"users": [ UserResponse(username=u.username, email=u.email, activities=[ActivityResponse(id=a.id, name=a.name) for a in u.activities]) for u in users ]}
+    return {"users": [ UserResponse(id=u.id, username=u.username, email=u.email, activities=[ActivityResponse(id=a.id, name=a.name) for a in u.activities]) for u in users ]}

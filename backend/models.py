@@ -31,8 +31,10 @@ class ActivityResponse(BaseModel):
     name: str
 
 class UserResponse(BaseModel):
+    id: int
     username: str
     email: str
+    description: str | None
     activities: list[ActivityResponse]
     
     

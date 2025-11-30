@@ -38,7 +38,13 @@ export default function Index() {
 
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
-    authContext.loginUser(data.email, data.password)
+    authContext.loginUser(data.email, data.password).then((value) => {
+        if (value) {
+            router.replace('/(tabs)')
+        } else {
+            console.log('error byku')
+        }
+    })
   };
 
   const handlePassVisChange = () => {

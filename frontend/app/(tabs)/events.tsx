@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Tab() {
+export default function EventsPage() {
   return (
     <View style={styles.container}>
-      <Text>Settings</Text>
+      <Text>Znajomi</Text>
     </View>
   );
 }

@@ -5,12 +5,22 @@ import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { useContext, useState } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Controller, useForm} from 'react-hook-form';
-import { ScrollView } from 'react-native';
+import {KeyboardAvoidingView, Platform, ScrollView} from 'react-native';
 import FormField from '@/components/auth/form-field'
 import { Text } from '@/components/ui/text';
-import { ArrowLeftIcon } from '@/components/ui/icon';
+import {ArrowLeftIcon, CheckIcon, CloseCircleIcon, Icon} from '@/components/ui/icon';
 import {useRouter} from 'expo-router';
 import { AuthContext } from '@/contexts/AuthContext';
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import {
+    Modal,
+    ModalBackdrop,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+} from '@/components/ui/modal';
+import {Heading} from "@/components/ui/heading";
 
 enum Errors {
   INVALID_EMAIL,
@@ -24,6 +34,9 @@ enum Errors {
 export default function RegisterScreen() {
   const [passVis, setPassVis] = useState(false)
   const [rePassVis, setRePassVis] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [showModal, setShowModal] = useState(false)
+    const [success, setSuccess] = useState(false)
 
   const router = useRouter()
 
@@ -43,7 +56,13 @@ export default function RegisterScreen() {
 
   const onSubmit = (data: any) => {
     console.log("Form submitted:", data);
+    setIsLoading(true)
     authContext.registerUser(data.username, data.password, data.email)
+        .then((value) => {
+            setIsLoading(false)
+            setSuccess(value)
+            setShowModal(true)
+        })
 
   };
 
@@ -59,10 +78,28 @@ export default function RegisterScreen() {
     router.replace('/(auth)')
   }
 
+  const handleOnCloseModal = () => {
+      setShowModal(false)
+      if (success) {
+          router.replace('/(auth)')
+      }
+  }
+
     return (
         <SafeAreaView>
-          <ScrollView className={''}>
-            <VStack space={'lg'}>
+            <ModalInfo
+                showModal={showModal}
+                onCloseModal={handleOnCloseModal}
+                success={success}
+            />
+          <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
+          <ScrollView
+              keyboardShouldPersistTaps={'handled'}
+              contentContainerStyle={{}}
+          >
+            <VStack space={'lg'} className={'pb-100'}>
               <Box className={'flex-col w-full items-center'}>
                 <Image
                   source={require('@/assets/images/register.png')}
@@ -173,7 +210,7 @@ export default function RegisterScreen() {
                   </>
                 )}
               />
-              <Box className={'mt-4 flex-row grow justify-center'}>
+              <Box className={'mt-4 mb-5 flex-row grow justify-center'}>
                 <Button
                   onPress={handleSubmit(onSubmit)}
                   size={'xl'}
@@ -184,7 +221,64 @@ export default function RegisterScreen() {
               </Box>
             </VStack>
           </ScrollView>
+          </KeyboardAvoidingView>
         </SafeAreaView>
 
+    )
+}
+
+interface ModalInfoProps {
+    showModal: boolean,
+    onCloseModal: () => void,
+    success: boolean
+}
+
+function ModalInfo({showModal, onCloseModal, success} : ModalInfoProps) {
+    return (
+        <Modal
+            isOpen={showModal}
+            onClose={onCloseModal}
+        >
+            <ModalBackdrop />
+            <ModalContent>
+                <ModalHeader className="flex-col items-center gap-0.5">
+                    {!success ? (
+                    <>
+                        <Box className="w-[40px] h-[40px] rounded-full bg-background-error items-center justify-center">
+                            <Icon
+                                className={'stroke-error-600 h-[35px] w-[35px]'}
+                                as={CloseCircleIcon}
+                                size={'xl'}
+                            />
+                        </Box>
+                    </>
+                    ) : (
+                    <>
+                        <Box className="w-[40px] h-[40px] rounded-full bg-background-success items-center justify-center">
+                            <Icon
+                                className={'stroke-success-500 h-[35px] w-[35px]'}
+                                as={CheckIcon}
+                                size={'xl'}
+                            />
+                        </Box>
+                    </>
+                    )}
+
+                    <Heading className={'text-center'}>
+                        {success ? 'Udało się utworzyć konto!' : 'Wystąpił błąd podczas tworzenia konta!'}
+                    </Heading>
+                </ModalHeader>
+                <ModalFooter className="flex-col items-start">
+                    <Button
+                        variant="link"
+                        size="sm"
+                        className="gap-1"
+                    >
+                        <ButtonIcon as={ArrowLeftIcon} />
+                        <ButtonText onPress={onCloseModal}>{success ? 'Przejdź do ekranu logowania': 'Wróć do rejestracji'}</ButtonText>
+                    </Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     )
 }

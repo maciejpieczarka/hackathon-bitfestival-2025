@@ -24,7 +24,7 @@ export default function Tab() {
     const password = 'test';
     try {
       const response = await fetch(
-        'http://192.168.3.138:8000/user_input_data',
+        'http://10.186.102.194:8000/user_input_data',
         {
           method: 'POST',
           headers: {

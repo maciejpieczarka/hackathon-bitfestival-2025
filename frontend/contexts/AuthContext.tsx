@@ -1,6 +1,6 @@
 import { createContext, useCallback, useState } from 'react';
 
-export const URL = 'http://192.168.3.134:8000/'
+export const URL = 'http://10.186.102.194:8000/'
 
 interface UserAuthData {
   registerUser: (username: string, password: string, email: string) => Promise<boolean>,

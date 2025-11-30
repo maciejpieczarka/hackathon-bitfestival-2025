@@ -74,93 +74,6 @@ def login(credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: S
 
     return {"status": "200", "username": credentials.username, "password": credentials.password}
 
-@app.post('/add_event')
-def add_event(event: Add_Event, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == credentials.username).first()
-
-    if not auth(user, credentials):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-        )
-
-    new_event = Event(
-        name=event.name,
-        event_time=event.event_time,
-        description=event.description,
-        organizer_id=user.id,
-        category=event.category
-    )
-
-    db.add(new_event)
-    db.commit()
-    db.refresh(new_event)
-
-    return {"status": "200"}
-
-@app.delete('/delete_event/{event_id}')
-def delete_event(event_id: int, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)
-):
-    user = db.query(User).filter(User.email == credentials.username).first()
-
-    if not auth(user, credentials):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-        )
-
-    event_to_delete = db.query(Event).filter(Event.id == event_id).first()
-
-    if not event_to_delete:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND
-        )
-
-    if event_to_delete.organizer_id != user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN
-        )
-
-    db.delete(event_to_delete)
-    db.commit()
-
-    return {"status": "200"}
-
-@app.post('/join_event')
-def join_event(join_data: Join_Event, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == credentials.username).first()
-
-    if not auth(user, credentials):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED
-        )
-
-    event = db.query(Event).filter(Event.id == join_data.event_id).first()
-    if not event:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND
-        )
-
-    existing_join = db.query(User2Event).filter(
-        User2Event.event_id == join_data.event_id,
-        User2Event.user_id == user.id
-    ).first()
-
-    if existing_join:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already joined the event")
-
-    if event.organizer_id == user.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already joined the event")
-
-    user2event = User2Event(
-        event_id=join_data.event_id,
-        user_id=user.id
-    )
-
-    db.add(user2event)
-    db.commit()
-    db.refresh(user2event)
-
-    return {"status": "200"}
-
 @app.post('/user_input_data')
 def user_input_data(data_vector: DataVector, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == credentials.username).first()
@@ -404,3 +317,104 @@ def get_events(category: str, credentials: Annotated[HTTPBasicCredentials, Depen
             ) for e in events
         ]
     }
+    
+@app.post('/add_event')
+def add_event(event: Add_Event, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    activity = db.query(Activity).filter(Activity.id == event.category).first()
+    if not activity:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Activity with ID {event.category} does not exist"
+        )
+
+    new_event = Event(
+        name=event.name,
+        event_time=event.event_time,
+        description=event.description,
+        organizer_id=user.id,
+        category=event.category
+    )
+
+    try:
+        db.add(new_event)
+        db.commit()
+        db.refresh(new_event)
+        return {"status": "200", "event_id": new_event.id}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+        
+@app.delete('/delete_event/{event_id}')
+def delete_event(event_id: int, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    event_to_delete = db.query(Event).filter(Event.id == event_id).first()
+
+    if not event_to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+
+    if event_to_delete.organizer_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN
+        )
+
+    db.query(User2Event).filter(User2Event.event_id == event_id).delete()
+
+    db.delete(event_to_delete)
+    db.commit()
+
+    return {"status": "200"}
+
+@app.post('/join_event')
+def join_event(join_data: Join_Event, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    event = db.query(Event).filter(Event.id == join_data.event_id).first()
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+
+    existing_join = db.query(User2Event).filter(
+        User2Event.event_id == join_data.event_id,
+        User2Event.user_id == user.id
+    ).first()
+
+    if existing_join:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already joined the event")
+
+    if event.organizer_id == user.id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already joined the event")
+
+    user2event = User2Event(
+        event_id=join_data.event_id,
+        user_id=user.id
+    )
+
+    db.add(user2event)
+    db.commit()
+    db.refresh(user2event)
+
+    return {"status": "200"}

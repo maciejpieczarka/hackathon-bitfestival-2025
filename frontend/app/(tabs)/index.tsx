@@ -1,23 +1,62 @@
 import QuizModal from '@/components/quizModal';
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
+import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 import UserCard from '@/components/userCard';
-import { users } from '@/constants/users';
+import { User } from '@/constants/users';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Tab() {
-  const [showModal, setShowModal] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(true);
+  const [usersState, setUsersState] = React.useState([]);
 
   //Sliders
+  const insertUserData = async (
+    mood: number,
+    energy: number,
+    collaborationStyle: number,
+    userActivities: number[]
+  ) => {
+    const username = 'maciek@polsl.pl';
+    const password = 'test';
+    try {
+      const response = await fetch(
+        'http://192.168.3.138:8000/user_input_data',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Basic ' + btoa(username + ':' + password),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            mood: mood,
+            energy: energy,
+            collaboration_style: collaborationStyle,
+            activity: userActivities
+          })
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setUsersState(result.users);
+    } catch (error) {}
+  };
   return (
     <SafeAreaProvider>
       <SafeAreaView>
         {/* Modal that opens once every 24h */}
-        <QuizModal isOpen={showModal} setIsOpen={setShowModal} />
+        <QuizModal
+          onFetch={insertUserData}
+          isOpen={showModal}
+          setIsOpen={setShowModal}
+        />
 
         {/* Lista najlepszych dopasowan pobranych z api */}
         <ScrollView>
@@ -26,18 +65,27 @@ export default function Tab() {
             <Heading size="2xl">Swoje idealne połączenia!</Heading>
           </Box>
           <Box className="mb-40 flex justify-between px-6 min-h-screen w-full">
-            {users.map(user => {
-              return (
-                <UserCard
-                  key={user.id}
-                  name={user.name}
-                  id={user.id}
-                  activities={user.activities}
-                  description={user.description}
-                  image={user.image}
+            {usersState.length !== 0 ? (
+              usersState.map((user: User) => {
+                return (
+                  <UserCard
+                    key={user.id}
+                    username={user.username}
+                    id={user.id}
+                    activities={user.activities}
+                    description={user.description}
+                  />
+                );
+              })
+            ) : (
+              <Box className="flex w-full h-screen">
+                <Image
+                  className="object-cover w-full"
+                  alt="Not found"
+                  source={require('@/assets/images/notfound.png')}
                 />
-              );
-            })}
+              </Box>
+            )}
           </Box>
         </ScrollView>
       </SafeAreaView>

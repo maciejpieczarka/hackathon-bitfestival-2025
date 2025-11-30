@@ -25,9 +25,11 @@ import {
 import { Text } from './ui/text';
 
 const QuizModal = ({
+  onFetch,
   isOpen,
   setIsOpen
 }: {
+  onFetch: any;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -136,6 +138,12 @@ const QuizModal = ({
                 variant="solid"
                 className="bg-info-500"
                 onPress={() => {
+                  onFetch(
+                    moodState,
+                    energyState,
+                    collaborationStyleState,
+                    userActivitiesState
+                  );
                   setIsOpen(false);
                 }}
               >

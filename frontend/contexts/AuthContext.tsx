@@ -1,5 +1,7 @@
 import { createContext, useCallback, useState } from 'react';
 
+export const URL = 'http://192.168.3.134:8000/'
+
 interface UserAuthData {
   registerUser: (username: string, password: string, email: string) => Promise<boolean>,
   loginUser: (email: string, password: string) => Promise<boolean>,
@@ -28,7 +30,7 @@ export function AuthContextProvider({children}: AuthContextProps) {
 
 
   const loginUser = useCallback(async (email: string, password: string) => {
-    const response = await fetch('http://192.168.3.134:8000/login', {
+    const response = await fetch(URL + 'login', {
         method: 'POST',
         headers: {
           "Authorization": 'Basic ' + btoa(email + ':' + password),
@@ -52,7 +54,7 @@ export function AuthContextProvider({children}: AuthContextProps) {
 
   const registerUser = useCallback( async (username: string, password: string, email: string) => {
     console.log(username, password, email)
-    const response = await fetch('http://192.168.3.134:8000/register', {
+    const response = await fetch(URL + 'register', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"

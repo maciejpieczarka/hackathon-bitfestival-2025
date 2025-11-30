@@ -3,7 +3,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from database_models import Activity, Group, User, Base, Event, User2Event, User2Group, UserInputDataVector
-from models import ActivityResponse, GroupCreate, GroupResponse, Join_Event, Register, Add_Event, DataVector, UserResponse, UserShortResponse
+from models import ActivityResponse, EventResponse, GroupCreate, GroupResponse, Join_Event, Register, Add_Event, DataVector, UserResponse, UserShortResponse
 from passlib.context import CryptContext
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from typing import Annotated
@@ -346,3 +346,61 @@ def leave_group(group_id: int, credentials: Annotated[HTTPBasicCredentials, Depe
         db.commit()
 
     return {"status": "200"}
+
+@app.get('/get_events')
+def get_events(credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    events = db.query(Event).all()
+
+    organizer_ids = {e.organizerid for e in events}
+    organizers = {u.id: u.username for u in db.query(User).filter(User.id.in_(organizer_ids)).all()}
+
+    return {
+        "events": [
+            EventResponse(
+                id=e.id,
+                name=e.name,
+                event_time=e.event_time,
+                description=e.description,
+                organizer_username=organizers.get(e.organizer_id),
+                created_at=e.created_at,
+                category=e.category
+            ) for e in events
+        ]
+    }
+
+@app.get('/get_events/{category}')
+def get_events(category: str, credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == credentials.username).first()
+
+    if not auth(user, credentials):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+    activity_id = db.query(Activity).filter(Activity.name == category).first()
+
+    events = db.query(Event).filter(Event.category == activity_id.id).all()
+
+    organizer_ids = {e.organizerid for e in events}
+    organizers = {u.id: u.username for u in db.query(User).filter(User.id.in_(organizer_ids)).all()}
+
+    return {
+        "events": [
+            EventResponse(
+                id=e.id,
+                name=e.name,
+                event_time=e.event_time,
+                description=e.description,
+                organizer_username=organizers.get(e.organizer_id),
+                created_at=e.created_at,
+                category=e.category
+            ) for e in events
+        ]
+    }

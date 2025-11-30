@@ -55,3 +55,12 @@ class GroupResponse(BaseModel):
     group_category: ActivityResponse
     users: list[UserShortResponse]
     
+class EventResponse(BaseModel):
+    id: int
+    name: str
+    event_time: datetime
+    description: str
+    organizer_username: str | None = None
+    created_at: datetime
+    category: int
+    

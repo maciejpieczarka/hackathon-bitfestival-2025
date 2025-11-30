@@ -36,5 +36,22 @@ class UserResponse(BaseModel):
     email: str
     description: str | None
     activities: list[ActivityResponse]
+    fit: float | None = None
     
+class GroupCreate(BaseModel):
+    group_name: str
+    group_description: str
+    group_category: int
+       
+class UserShortResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    
+class GroupResponse(BaseModel):
+    id: int
+    group_name: str
+    group_description: str | None
+    group_category: ActivityResponse
+    users: list[UserShortResponse]
     

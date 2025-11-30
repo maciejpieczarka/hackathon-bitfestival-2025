@@ -13,6 +13,7 @@ class User(Base):
     
     events = relationship("Event", back_populates="organizer")
     activities = relationship("Activity", secondary='user2activity', back_populates="users")
+    groups = relationship("Group", secondary='user2group', back_populates="users")
 
 class Event(Base):
     __tablename__ = 'events'
@@ -67,3 +68,24 @@ class User2Activity(Base):
 
     user = relationship("User")
     activity = relationship("Activity")
+    
+class Group(Base):
+    __tablename__ = 'groups'
+
+    id = Column(Integer, primary_key=True, index=True)
+    group_name = Column(String(255), unique=True)
+    group_description = Column(String(1000), default="")
+    category_id = Column(ForeignKey('activities.id'), index=True)
+
+    users = relationship("User", secondary='user2group', back_populates="groups")
+    category = relationship("Activity")
+    
+class User2Group(Base):
+    __tablename__ = 'user2group'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(ForeignKey('users.id'), index=True)
+    group_id = Column(ForeignKey('groups.id'), index=True)
+
+    user = relationship("User")
+    group = relationship("Group")

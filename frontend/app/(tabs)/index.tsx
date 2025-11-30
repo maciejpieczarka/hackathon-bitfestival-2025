@@ -45,7 +45,7 @@ export default function Tab() {
       }
 
       const result = await response.json();
-      console.log(result);
+
       setUsersState(result.users);
     } catch (error) {}
   };

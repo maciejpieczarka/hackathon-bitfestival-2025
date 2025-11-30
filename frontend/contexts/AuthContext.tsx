@@ -2,10 +2,11 @@ import { createContext, useCallback, useState } from 'react';
 
 interface UserAuthData {
   registerUser: (username: string, password: string, email: string) => void,
-  loginUser: (email: string, password: string) => void,
-  username: string,
+  loginUser: (email: string, password: string) => Promise<boolean>,
   email: string,
   password: string,
+    token: string,
+
 }
 
 interface AuthContextProps {
@@ -14,29 +15,39 @@ interface AuthContextProps {
 
 export const AuthContext = createContext<UserAuthData>({
   registerUser: (username: string, password: string, email: string) => {},
-  loginUser: (email: string, password: string) => {},
+  loginUser: async (email: string, password: string) => {return false},
   email: '',
-  username: '',
-  password: ''
+  password: '',
+    token: '',
 })
 
 export function AuthContextProvider({children}: AuthContextProps) {
-  const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [email, setEmail] = useState<string>('')
+    const [token, setToken] = useState<string>('')
 
 
-  const loginUser = useCallback((email: string, password: string) => {
-    const response = fetch('http://192.168.3.138:8000/login', {
+  const loginUser = useCallback(async (email: string, password: string) => {
+    const response = await fetch('http://192.168.3.138:8000/login', {
         method: 'POST',
         headers: {
-          "Authorization": 'Basic ' + btoa(username + ':' + password),
+          "Authorization": 'Basic ' + btoa(email + ':' + password),
           "Content-Type": "application/json"
         },
-      }).then((value) => {
-        console.log(value)
-        console.log(value.status)
       })
+
+      console.log(response)
+      console.log(typeof (response.status))
+      if (response.status === 200) {
+          setEmail(email)
+          setPassword(password)
+          setToken('Basic ' + btoa(email + ':' + password))
+          return true
+      } else {
+          console.log("dupa, zle")
+          return false
+      }
+
   }, [])
 
   const registerUser = useCallback((username: string, password: string, email: string) => {
@@ -52,7 +63,9 @@ export function AuthContextProvider({children}: AuthContextProps) {
           email: email
         })
       }).then((value) => {
-      console.log(value.status)
+        if (value.status === 200) {
+            //ok
+        }
 
     })
   }, [])
@@ -60,9 +73,9 @@ export function AuthContextProvider({children}: AuthContextProps) {
   const authData: UserAuthData = {
     registerUser,
     loginUser,
-    username,
     password,
     email,
+      token,
   }
 
   return (

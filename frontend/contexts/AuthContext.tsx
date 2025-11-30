@@ -30,7 +30,7 @@ export function AuthContextProvider({children}: AuthContextProps) {
     const response = fetch('http://192.168.3.138:8000/login', {
         method: 'POST',
         headers: {
-          "Authorization": btoa(username + ':' + password),
+          "Authorization": 'Basic ' + btoa(username + ':' + password),
           "Content-Type": "application/json"
         },
       }).then((value) => {

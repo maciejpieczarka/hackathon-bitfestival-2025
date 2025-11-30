@@ -1,4 +1,3 @@
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 import { Stack, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';

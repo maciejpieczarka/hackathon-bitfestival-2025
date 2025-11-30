@@ -10,7 +10,7 @@ import { ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Tab() {
-  const [showModal, setShowModal] = React.useState(true);
+  const [showModal, setShowModal] = React.useState(false);
   const [usersState, setUsersState] = React.useState([]);
 
   //Sliders

@@ -23,7 +23,7 @@ export default function Layout() {
 
       if (!isLoggedIn) {
         redirectedRef.current = true;
-        router.replace('/(tabs)');
+        router.replace('/(auth)');
       } else {
         redirectedRef.current = true;
         router.replace('/');

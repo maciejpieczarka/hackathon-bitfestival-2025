@@ -1,5 +1,4 @@
 import { Group } from '@/constants/groups';
-import type { User } from '@/constants/users';
 import { Box } from './ui/box';
 import { Button, ButtonIcon, ButtonText } from './ui/button';
 import { Heading } from './ui/heading';
@@ -11,8 +10,9 @@ const GroupCard = ({
   group_name,
   group_category,
   group_description,
-  group_users
+  users
 }: Group) => {
+  console.log(users);
   return (
     <Box className="my-4 w-full bg-white shadow-sm flex items-start p-2 rounded-3xl">
       <Box className="px-4">
@@ -25,7 +25,7 @@ const GroupCard = ({
         <Box className="mt-4 flex flex-col justify-start">
           <Heading size="sm">Aktywności</Heading>
           <Box className="flex flex-row gap-2 py-1 flex-wrap">
-            {group_users.map(({ id, username }: User) => {
+            {users.map(({ email, id, username }: any) => {
               return (
                 <Box
                   key={id}
@@ -41,7 +41,7 @@ const GroupCard = ({
 
       <Box className="w-full flex px-4 ">
         <Button action="positive" variant="solid" className="my-4 rounded-2xl">
-          <ButtonText>Zobacz Profil</ButtonText>
+          <ButtonText>Dołącz do grupy</ButtonText>
           <ButtonIcon as={ArrowRightIcon} />
         </Button>
       </Box>

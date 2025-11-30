@@ -11,6 +11,7 @@ import {Text} from '@/components/ui/text'
 import { ExternalPathString, Link, RelativePathString, useRouter } from 'expo-router';
 import { ExternalLinkIcon } from '@/components/ui/icon';
 import { AuthContext } from '@/contexts/AuthContext';
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 enum Errors {
   INVALID_EMAIL,
@@ -42,7 +43,7 @@ export default function Index() {
         if (value) {
             router.replace('/(tabs)')
         } else {
-            console.log('error byku')
+
         }
     })
   };
@@ -61,7 +62,10 @@ export default function Index() {
 
   return (
     <SafeAreaView>
-      <ScrollView className={''}>
+      <KeyboardAwareScrollView
+        enableOnAndroid={true}
+        extraScrollHeight={40}
+      >
         <VStack space={'lg'}>
           <Box className={'flex-col w-full items-center'}>
             <Image
@@ -136,7 +140,7 @@ export default function Index() {
             </Button>
           </Box>
         </VStack>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
 
   )

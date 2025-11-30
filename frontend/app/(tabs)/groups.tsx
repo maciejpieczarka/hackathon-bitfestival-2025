@@ -1,20 +1,15 @@
-import QuizModal from '@/components/quizModal';
+import GroupCard from '@/components/groupCard';
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
-import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
-import UserCard from '@/components/userCard';
-import { User } from '@/constants/users';
+import { Groups } from '@/constants/groups';
 import React from 'react';
 import { ScrollView } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Tab() {
-  const [showModal, setShowModal] = React.useState(false);
-  const [usersState, setUsersState] = React.useState([]);
-
-  //Sliders
-  const insertUserData = async (
+export default function GroupsPage() {
+  //api
+  const fetchGroups = async (
     mood: number,
     energy: number,
     collaborationStyle: number,
@@ -46,47 +41,30 @@ export default function Tab() {
 
       const result = await response.json();
       console.log(result);
-      setUsersState(result.users);
     } catch (error) {}
   };
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        {/* Modal that opens once every 24h */}
-        <QuizModal
-          onFetch={insertUserData}
-          isOpen={showModal}
-          setIsOpen={setShowModal}
-        />
-
         {/* Lista najlepszych dopasowan pobranych z api */}
         <ScrollView>
           <Box className="mx-6 my-6 flex gap-1 ">
-            <Text size="lg">Odkrywaj</Text>
-            <Heading size="2xl">Swoje idealne połączenia!</Heading>
+            <Text size="lg">Odnajdź</Text>
+            <Heading size="2xl">Społeczności dla siebie!</Heading>
           </Box>
           <Box className="mb-40 flex justify-between px-6 min-h-screen w-full">
-            {usersState.length !== 0 ? (
-              usersState.map((user: User) => {
-                return (
-                  <UserCard
-                    key={user.id}
-                    username={user.username}
-                    id={user.id}
-                    activities={user.activities}
-                    description={user.description}
-                  />
-                );
-              })
-            ) : (
-              <Box className="flex w-full h-screen">
-                <Image
-                  className="object-cover w-full"
-                  alt="Not found"
-                  source={require('@/assets/images/notfound.png')}
+            {Groups.map(group => {
+              return (
+                <GroupCard
+                  key={group.id}
+                  id={group.id}
+                  group_category={group.group_category}
+                  group_description={group.group_description}
+                  group_name={group.group_name}
+                  group_users={group.group_users}
                 />
-              </Box>
-            )}
+              );
+            })}
           </Box>
         </ScrollView>
       </SafeAreaView>

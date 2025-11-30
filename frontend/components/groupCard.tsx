@@ -1,46 +1,37 @@
-import { Activity } from '@/constants/activities';
+import { Group } from '@/constants/groups';
 import type { User } from '@/constants/users';
 import { Box } from './ui/box';
 import { Button, ButtonIcon, ButtonText } from './ui/button';
 import { Heading } from './ui/heading';
 import { ArrowRightIcon } from './ui/icon';
-import { Image } from './ui/image';
 import { Text } from './ui/text';
 
-const UserCard = ({ id, username, activities, description }: User) => {
-  const randomNumber = Math.floor(Math.random() * 3) + 1;
-  let image = '';
-  if (randomNumber === 0) {
-    image = require('@/assets/images/1.jpg');
-  } else if (randomNumber === 2) {
-    image = require('@/assets/images/2.jpg');
-  } else {
-    image = require('@/assets/images/3.jpg');
-  }
-
+const GroupCard = ({
+  id,
+  group_name,
+  group_category,
+  group_description,
+  group_users
+}: Group) => {
   return (
     <Box className="my-4 w-full bg-white shadow-sm flex items-start p-2 rounded-3xl">
-      <Image
-        className="object-top rounded-3xl object-fill w-full top-0"
-        size="2xl"
-        source={image}
-        alt={username}
-      />
       <Box className="px-4">
         <Heading size="md" className="text-left my-2">
-          {username}
+          {group_name}
         </Heading>
-        <Text>{description ? description.substring(0, 90) : '...'}</Text>
+        <Text>
+          {group_description ? group_description.substring(0, 90) : '...'}
+        </Text>
         <Box className="mt-4 flex flex-col justify-start">
           <Heading size="sm">Aktywności</Heading>
           <Box className="flex flex-row gap-2 py-1 flex-wrap">
-            {activities.map(({ id, name }: Activity) => {
+            {group_users.map(({ id, username }: User) => {
               return (
                 <Box
                   key={id}
                   className="border-info-500 border-2 rounded-lg px-2 bg-info-50/50"
                 >
-                  <Text>{name}</Text>
+                  <Text>{username}</Text>
                 </Box>
               );
             })}
@@ -58,4 +49,4 @@ const UserCard = ({ id, username, activities, description }: User) => {
   );
 };
 
-export default UserCard;
+export default GroupCard;

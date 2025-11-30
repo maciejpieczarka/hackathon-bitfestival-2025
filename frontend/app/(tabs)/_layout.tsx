@@ -43,7 +43,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="events"
+        name="groups"
         options={{
           title: 'Grupy',
           tabBarIcon: ({ focused, color }) => (
@@ -58,7 +58,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="friends"
+        name="events"
         options={{
           title: 'Wydarzenia',
           tabBarIcon: ({ color, focused }) => (

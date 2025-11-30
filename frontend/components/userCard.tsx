@@ -18,8 +18,6 @@ const UserCard = ({ id, username, activities, description }: User) => {
     image = require('@/assets/images/3.jpg');
   }
 
-  console.log('name: ' + username);
-  console.log('id: ' + id);
   return (
     <Box className="my-4 w-full bg-white shadow-sm flex items-start p-2 rounded-3xl">
       <Image

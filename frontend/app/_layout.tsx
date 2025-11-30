@@ -1,15 +1,15 @@
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import {AuthContext, AuthContextProvider} from '@/contexts/AuthContext';
+import { AuthContext, AuthContextProvider } from '@/contexts/AuthContext';
 import '@/global.css';
 import { Stack, useRouter } from 'expo-router';
-import {useContext, useEffect, useRef, useState} from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 export default function Layout() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   const redirectedRef = useRef(false);
-  const authContext = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     setMounted(true);
@@ -23,7 +23,7 @@ export default function Layout() {
 
       if (!isLoggedIn) {
         redirectedRef.current = true;
-        router.replace('/(auth)');
+        router.replace('/(tabs)');
       } else {
         redirectedRef.current = true;
         router.replace('/');
